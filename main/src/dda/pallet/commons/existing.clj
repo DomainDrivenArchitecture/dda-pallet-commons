@@ -25,7 +25,8 @@
 (def ExistingNode
   "Represents a target node with ip and its name."
   {:node-name s/Str
-   :node-ip s/Str})
+   :node-ip s/Str
+   (s/optional-key :node-port) s/Int})
 
 (def ExistingNodes
   "A sequence of ExistingNodes."
@@ -58,21 +59,25 @@
   single-remote-node
   [group :- s/Keyword
    existing-node :- ExistingNode]
-  (let [{:keys [node-name node-ip]} existing-node]
+  (let [{:keys [node-name node-ip node-port] :or {node-port 22}} existing-node]
     (node-list/make-node
       node-name
       (name group)
       node-ip
-      :ubuntu)))
+      :ubuntu
+      :ssh-port node-port)))
 
 (s/defn ^:always-validate
   remote-node
-  ([node-ip node-name group-name]
+  ([node-ip node-name group-name node-port]
    (node-list/make-node
-     node-name
-     group-name
-     node-ip
-     :ubuntu))
+    node-name
+    group-name
+    node-ip
+    :ubuntu
+    :ssh-port (or node-port 22)))
+  ([node-ip node-name group-name]
+   (remote-node node-ip node-name group-name nil))
   ([group :- s/Keyword
     existing-nodes :- [ExistingNode]]
    (map #(single-remote-node group %) existing-nodes)))
@@ -81,10 +86,12 @@
   provider
   ([provisioning-ip :- s/Str
     node-id :- s/Str
-    group-name  :- s/Str]
+    group-name  :- s/Str
+    & [node-port] :- [s/Int]
+    ]
    (compute/instantiate-provider
      "node-list"
-     :node-list [(remote-node provisioning-ip node-id group-name)]))
+     :node-list [(remote-node provisioning-ip node-id group-name node-port)]))
   ([existing-nodes :- ExistingNodes]
    (compute/instantiate-provider
       "node-list"
