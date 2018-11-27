@@ -4,13 +4,13 @@
   :license {:name "Apache License, Version 2.0"
             :url "https://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/tools.cli "0.3.7"]
+                 [org.clojure/tools.cli "0.4.1"]
                  [prismatic/schema "1.1.9"]
                  [mvxcvi/clj-pgp "0.9.0"]
-                 [dda/dda-config-commons "1.4.0"]
+                 [dda/dda-config-commons "1.4.1"]
                  [ch.qos.logback/logback-classic "1.3.0-alpha4"]
                  [dda/pallet "0.9.0"]
-                 [keypin "0.7.4"]]
+                 [keypin "0.7.6"]]
   :source-paths ["main/src"]
   :resource-paths ["main/resources"]
   :repositories [["snapshots" :clojars]
@@ -39,6 +39,6 @@
                        :resource-paths ["uberjar/resources"]
                        :aot :all
                        :main dda.pallet.dda-managed-ide.main
-                       :dependencies [[org.clojure/tools.cli "0.3.7"]]}}
+                       :dependencies [[org.clojure/tools.cli "0.4.1"]]}}
   :classifiers {:tests :test}
   :local-repo-classpath true)
