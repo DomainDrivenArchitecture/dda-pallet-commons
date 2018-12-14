@@ -21,11 +21,14 @@
     [pallet.actions :as actions]))
 
 (def ScriptResult
-  {:context s/Str
+  {:context (s/maybe s/Str)
    :out s/Any
    :action-symbol s/Any
    :exit s/Num
-   :script s/Any})
+   :script s/Any
+   :flag-values {}
+   :flags s/Any ;; #{?}
+   :summary s/Any})
 
 (def FactResult
   {:context s/Str
