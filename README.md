@@ -82,5 +82,8 @@ lein idefiles eclipse
 up to now you're ready to start working ...
 
 
-# License
-Published under [apache2.0 license](LICENSE.md)
+## License
+
+Copyright © 2015, 2016, 2017, 2018 meissa GmbH
+Licensed under the [Apache License, Version 2.0](LICENSE) (the "License")
+Pls. find licenses of our subcomponents [here](doc/SUBCOMPONENT_LICENSE)
