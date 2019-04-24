@@ -21,9 +21,9 @@
 
 (defn- session-out
   [summarize? session]
-  (if summarize?
-    (pr/session-summary session)
-    session))
+  (when summarize?
+    (pr/session-summary session))
+  session)
 
 (defn- provision-user [group]
   (let [provision-user (get-in group [:image :login-user])]
