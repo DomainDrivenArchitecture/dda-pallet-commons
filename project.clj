@@ -1,4 +1,4 @@
-(defproject dda/dda-pallet-commons "1.5.0-SNAPSHOT"
+(defproject dda/dda-pallet-commons "1.5.0"
   :description "common utils for dda pallet"
   :url "https://www.domaindrivenarchitecture.org"
   :license {:name "Apache License, Version 2.0"
@@ -7,7 +7,7 @@
                  [org.clojure/tools.cli "0.4.2"]
                  [prismatic/schema "1.1.10"]
                  [mvxcvi/clj-pgp "0.10.0"]
-                 [dda/dda-config-commons "1.5.0-SNAPSHOT"]
+                 [dda/dda-config-commons "1.5.0"]
                  [ch.qos.logback/logback-classic "1.3.0-alpha4" 
                   :exclusions [com.sun.mail/javax.mail]]
                  [dda/pallet "0.9.1"]
