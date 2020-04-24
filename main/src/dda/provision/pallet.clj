@@ -41,17 +41,17 @@
      :group user
      :owner user)
     (doseq [resource files]
-      (let [template? (contains? resource :config)
-            filename (:filename resource)
+      (let [template? (contains? resource ::p/config)
+            filename (::p/filename resource)
             filename-on-target (str all-module-path "/" filename)
             filename-on-source (if template?
                                  (str sub-module "/" filename ".template")
                                  (str sub-module "/" filename))
             config (if template?
-                     (:config resource)
+                     (::p/config resource)
                      {})
             mode (cond
-                   (contains? resource :mode) (:mode resource)
+                   (contains? resource ::p/mode) (::p/mode resource)
                    (string/ends-with? filename ".sh") "700"
                    :default "600")]
         (actions/remote-file
