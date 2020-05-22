@@ -124,7 +124,7 @@
    (str "execute command as user " user)
    ; TODO: use function home-dir instead
    ("cd" ~(str "/home/" user))
-   ("sudo" "-H" "-u" ~user "bash" "-c" ~command))
+   ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "\"" command "\"")))
   )
 ;; TODO: Find out how to define spec for multimethod
 (s/fdef p/exec-command-as-user
