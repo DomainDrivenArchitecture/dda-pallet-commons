@@ -41,17 +41,17 @@
      :group user
      :owner user)
     (doseq [resource files]
-      (let [template? (contains? resource ::p/config)
-            filename (::p/filename resource)
+      (let [template? (contains? resource :config)
+            filename (:filename resource)
             filename-on-target (str all-module-path "/" filename)
             filename-on-source (if template?
                                  (str sub-module "/" filename ".template")
                                  (str sub-module "/" filename))
             config (if template?
-                     (::p/config resource)
+                     (:config resource)
                      {})
             mode (cond
-                   (contains? resource ::p/mode) (::p/mode resource)
+                   (contains? resource :mode) (:mode resource)
                    (string/ends-with? filename ".sh") "700"
                    :default "600")]
         (actions/remote-file
@@ -117,6 +117,22 @@
                :module ::p/module
                :sub-module ::p/sub-module
                :filename ::p/filename))
+
+(defmethod p/exec-command-as-user
+  [provisioner user command]
+  (actions/exec-checked-script
+   (str "execute command as user " user)
+   ; TODO: use function home-dir instead
+   ("cd" ~(str "/home/" user))
+   ("sudo" "-H" "-u" ~user "bash" "-c" ~command))
+  )
+;; TODO: Find out how to define spec for multimethod
+(s/fdef p/exec-command-as-user
+  :args (s/cat :provisioner ::p/provisioner
+               :user ::p/user
+               :command ::p/command))
+
+
 
 (defmethod p/provision-log ::pallet
   [provisioner module sub-module log-level log-message]
