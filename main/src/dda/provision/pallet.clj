@@ -70,6 +70,10 @@
   [facility]
   (str "/tmp/" facility))
 
+(defn escape-quotation-marks
+  [command]
+  (string/replace command #"\"" "\\\\\""))
+
 (defmethod p/copy-resources-to-user ::pallet
   [provisioner user module sub-module files]
   (copy-resources-to-path user (user-path user module) sub-module files))
@@ -118,21 +122,18 @@
                :sub-module ::p/sub-module
                :filename ::p/filename))
 
-(defmethod p/exec-command-as-user
+(defmethod p/exec-command-as-user ::pallet
   [provisioner user command]
-  (actions/exec-checked-script
-   (str "execute command as user " user)
-   ; TODO: use function home-dir instead
-   ("cd" ~(str "/home/" user))
-   ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "\"" command "\"")))
-  )
+  (let [command (escape-quotation-marks command)]
+    (actions/exec-checked-script
+     (str "execute command as user " user)
+     ("cd" ~(System/getProperty "user.home"))
+     ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "\"" command "\"")))))
 ;; TODO: Find out how to define spec for multimethod
 (s/fdef p/exec-command-as-user
   :args (s/cat :provisioner ::p/provisioner
                :user ::p/user
                :command ::p/command))
-
-
 
 (defmethod p/provision-log ::pallet
   [provisioner module sub-module log-level log-message]
