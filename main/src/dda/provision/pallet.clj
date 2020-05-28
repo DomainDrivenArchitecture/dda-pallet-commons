@@ -84,6 +84,15 @@
                :sub-module ::p/sub-module
                :files ::p/files))
 
+(defmethod p/copy-resources-to-tmp ::pallet
+  [provisioner module sub-module files]
+  (copy-resources-to-path "root" (tmp-path module) sub-module files))
+(s/fdef p/copy-resources-to-tmp
+  :args (s/cat :provisioner ::p/provisioner
+               :module ::p/module
+               :sub-module ::p/sub-module
+               :files ::p/files))
+
 (defmethod p/exec-as-user ::pallet
   [provisioner user module sub-module filename]
   (let [module-path (user-path user module)
@@ -99,14 +108,18 @@
                :sub-module ::p/sub-module
                :filename ::p/filename))
 
-(defmethod p/copy-resources-to-tmp ::pallet
-  [provisioner module sub-module files]
-  (copy-resources-to-path "root" (tmp-path module) sub-module files))
-(s/fdef p/copy-resources-to-tmp
+(defmethod p/exec-command-as-user ::pallet
+  [provisioner user command]
+  (let [command (escape-quotation-marks command)]
+    (actions/exec-checked-script
+     (str "execute command as user " user)
+     ("cd" ~(System/getProperty "user.home"))
+     ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "\"" command "\"")))))
+;; TODO: Find out how to define spec for multimethod
+(s/fdef p/exec-command-as-user
   :args (s/cat :provisioner ::p/provisioner
-               :module ::p/module
-               :sub-module ::p/sub-module
-               :files ::p/files))
+               :user ::p/user
+               :command ::p/command))
 
 (defmethod p/exec-as-root ::pallet
   [provisioner module sub-module filename]
@@ -122,17 +135,15 @@
                :sub-module ::p/sub-module
                :filename ::p/filename))
 
-(defmethod p/exec-command-as-user ::pallet
-  [provisioner user command]
+(defmethod p/exec-command-as-root ::pallet
+  [provisioner command]
   (let [command (escape-quotation-marks command)]
     (actions/exec-checked-script
-     (str "execute command as user " user)
-     ("cd" ~(System/getProperty "user.home"))
-     ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "\"" command "\"")))))
-;; TODO: Find out how to define spec for multimethod
-(s/fdef p/exec-command-as-user
+     (str "execute command as user root")
+     ("cd" "/root")
+     ("sudo" "-H" "bash" "-c" ~(str "\"" command "\"")))))
+(s/fdef p/exec-command-as-root
   :args (s/cat :provisioner ::p/provisioner
-               :user ::p/user
                :command ::p/command))
 
 (defmethod p/provision-log ::pallet
