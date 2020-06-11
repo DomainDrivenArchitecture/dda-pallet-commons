@@ -74,6 +74,13 @@
   [command]
   (string/replace command #"\"" "\\\\\""))
 
+(defn split-script
+  "splits a shell script in a list of shell commands"
+  [script]
+  (filter (fn [x] (and (not= "" x) (not (string/starts-with? x "#"))))
+          (map (fn [x] (string/trim x))
+               (string/split-lines script))))
+
 (defmethod p/copy-resources-to-user ::pallet
   [provisioner user module sub-module files]
   (copy-resources-to-path user (user-path user module) sub-module files))
@@ -93,7 +100,10 @@
                :sub-module ::p/sub-module
                :files ::p/files))
 
-(defmethod p/exec-as-user ::pallet
+;-----------------------------------------------------------
+;execute as user
+
+(defmethod p/exec-file-on-target-as-user ::pallet
   [provisioner user module sub-module filename]
   (let [module-path (user-path user module)
         all-module-path (str module-path "/" sub-module)]
@@ -101,7 +111,7 @@
      (str "execute " sub-module "/" filename)
      ("cd" ~all-module-path)
      ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "./" filename)))))
-(s/fdef p/exec-as-user
+(s/fdef p/exec-file-on-target-as-user
   :args (s/cat :provisioner ::p/provisioner
                :user ::p/user
                :module ::p/module
@@ -121,7 +131,22 @@
                :user ::p/user
                :command ::p/command))
 
-(defmethod p/exec-as-root ::pallet
+(defmethod p/exec-file-from-source-as-user ::pallet
+  [provisioner user module sub-module filename]
+  )
+(s/fdef p/exec-file-from-source-as-user
+  :args (s/cat :provisioner ::p/provisioner
+               :user ::p/user
+               :module ::p/module
+               :sub-module ::p/sub-module
+               :filename ::p/filename))
+
+;; (slurp (.getFile (clojure.java.io/resource file-with-path)))
+;; 
+;-----------------------------------------------------------
+;execute as root
+
+(defmethod p/exec-file-on-target-as-root ::pallet
   [provisioner module sub-module filename]
   (let [module-path (tmp-path sub-module)
         all-module-path (str module-path "/" sub-module)]
@@ -129,7 +154,7 @@
      (str "execute " sub-module "/" filename)
      ("cd" ~all-module-path)
      ("bash" ~filename))))
-(s/fdef p/exec-as-root
+(s/fdef p/exec-file-on-target-as-root
   :args (s/cat :provisioner ::p/provisioner
                :module ::p/module
                :sub-module ::p/sub-module
