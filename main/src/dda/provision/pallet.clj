@@ -75,7 +75,7 @@
   (string/replace command #"\"" "\\\\\""))
 
 (defn split-script
-  "splits a shell script in a list of shell commands"
+  "splits a shell script in a vector of shell commands"
   [script]
   (filter (fn [x] (and (not= "" x) (not (string/starts-with? x "#"))))
           (map (fn [x] (string/trim x))
@@ -133,16 +133,17 @@
 
 (defmethod p/exec-file-from-source-as-user ::pallet
   [provisioner user module sub-module filename]
-  )
+  (map
+    #(p/exec-command-as-user user %)
+    (split-script
+      (slurp (.getFile (clojure.java.io/resource file-with-path))))))
 (s/fdef p/exec-file-from-source-as-user
   :args (s/cat :provisioner ::p/provisioner
                :user ::p/user
                :module ::p/module
                :sub-module ::p/sub-module
                :filename ::p/filename))
-
-;; (slurp (.getFile (clojure.java.io/resource file-with-path)))
-;; 
+;;
 ;-----------------------------------------------------------
 ;execute as root
 
