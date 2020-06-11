@@ -81,6 +81,8 @@
           (map (fn [x] (string/trim x))
                (string/split-lines script))))
 
+;-----------------------------------------------------------
+;Copy stuff
 (defmethod p/copy-resources-to-user ::pallet
   [provisioner user module sub-module files]
   (copy-resources-to-path user (user-path user module) sub-module files))
@@ -102,7 +104,6 @@
 
 ;-----------------------------------------------------------
 ;execute as user
-
 (defmethod p/exec-file-on-target-as-user ::pallet
   [provisioner user module sub-module filename]
   (let [module-path (user-path user module)
@@ -144,10 +145,9 @@
                :module ::p/module
                :sub-module ::p/sub-module
                :filename ::p/filename))
-;;
+
 ;-----------------------------------------------------------
 ;execute as root
-
 (defmethod p/exec-file-on-target-as-root ::pallet
   [provisioner module sub-module filename]
   (let [module-path (tmp-path sub-module)
@@ -179,6 +179,7 @@
                :sub-module ::p/sub-module
                :filename ::p/filename))
 
+;-----------------------------------------------------------
 (defmethod p/provision-log ::pallet
   [provisioner module sub-module log-level log-message]
   (actions/as-action (logging/log log-level (str module "/" sub-module " - " log-message))))
