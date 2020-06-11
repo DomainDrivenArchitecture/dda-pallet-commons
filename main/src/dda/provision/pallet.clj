@@ -133,10 +133,11 @@
 
 (defmethod p/exec-file-from-source-as-user ::pallet
   [provisioner user module sub-module filename]
-  (map
-    #(p/exec-command-as-user user %)
-    (split-script
-      (slurp (.getFile (clojure.java.io/resource file-with-path))))))
+  (let [file-with-path (str sub-module "/" filename)]
+    (map
+     #(p/exec-command-as-user provisioner user %)
+     (split-script
+      (slurp (.getFile (clojure.java.io/resource file-with-path)))))))
 (s/fdef p/exec-file-from-source-as-user
   :args (s/cat :provisioner ::p/provisioner
                :user ::p/user
@@ -163,14 +164,20 @@
 
 (defmethod p/exec-command-as-root ::pallet
   [provisioner command]
-  (let [command (escape-quotation-marks command)]
-    (actions/exec-checked-script
-     (str "execute command as user root")
-     ("cd" "/root")
-     ("sudo" "-H" "bash" "-c" ~(str "\"" command "\"")))))
+  (p/exec-command-as-user provisioner "root" command))
 (s/fdef p/exec-command-as-root
   :args (s/cat :provisioner ::p/provisioner
                :command ::p/command))
+
+(defmethod p/exec-file-from-source-as-root ::pallet
+  [provisioner module sub-module filename]
+  (p/exec-file-from-source-as-user provisioner "root" module sub-module filename))
+(s/fdef p/exec-file-from-source-as-root
+  :args (s/cat :provisioner ::p/provisioner
+               :user ::p/user
+               :module ::p/module
+               :sub-module ::p/sub-module
+               :filename ::p/filename))
 
 (defmethod p/provision-log ::pallet
   [provisioner module sub-module log-level log-message]
@@ -184,7 +191,13 @@
 
 
 (instrument `p/copy-resources-to-user)
-(instrument `p/exec-as-user)
 (instrument `p/copy-resources-to-tmp)
-(instrument `p/exec-as-root)
+
+(instrument `p/exec-file-on-target-as-user)
+(instrument `p/exec-command-as-user)
+(instrument `p/exec-file-from-source-as-root)
+
+(instrument `p/exec-file-on-target-as-root)
+(instrument `p/exec-command-as-root)
+(instrument `p/exec-file-from-source-as-root)
 (instrument `p/provision-log)
