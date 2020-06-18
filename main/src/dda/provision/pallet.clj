@@ -124,7 +124,7 @@
   (let [command (escape-quotation-marks command)]
     (actions/exec-checked-script
      (str "execute command as user " user)
-     ("cd" ~(System/getProperty "user.home"))
+     ("cd" (str "/home/" ~user))
      ("sudo" "-H" "-u" ~user "bash" "-c" ~(str "\"" command "\"")))))
 ;; TODO: Find out how to define spec for multimethod
 (s/fdef p/exec-command-as-user
