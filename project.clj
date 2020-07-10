@@ -8,7 +8,7 @@
                  [prismatic/schema "1.1.12"]
                  [mvxcvi/clj-pgp "0.10.2"]
                  [dda/dda-config-commons "1.5.0"]
-                 [dda/dda-provision "0.2.0-SNAPSHOT"]
+                 [dda/dda-provision "0.2.0"]
                  [ch.qos.logback/logback-classic "1.3.0-alpha5" 
                   :exclusions [com.sun.mail/javax.mail]]
                  [dda/pallet "0.9.1"]
