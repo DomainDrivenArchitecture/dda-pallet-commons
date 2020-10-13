@@ -150,7 +150,7 @@
 ;execute as root
 (defmethod p/exec-file-on-target-as-root ::pallet
   [provisioner module sub-module filename]
-  (let [module-path (tmp-path sub-module)
+  (let [module-path (tmp-path module)
         all-module-path (str module-path "/" sub-module)]
     (actions/exec-checked-script
      (str "execute " sub-module "/" filename)
