@@ -186,7 +186,7 @@
 (s/fdef p/provision-log
   :args (s/cat :provisioner ::p/provisioner
                :module ::p/module
-               :sub-module ::p/log-level
+               :sub-module ::p/sub-module
                :log-level ::p/log-level
                :log-message ::p/log-message))
 
