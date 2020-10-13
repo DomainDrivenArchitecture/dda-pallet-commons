@@ -182,7 +182,7 @@
 ;-----------------------------------------------------------
 (defmethod p/provision-log ::pallet
   [provisioner module sub-module log-level log-message]
-  (actions/as-action (logging/log (name log-level) (str module "/" sub-module " - " log-message))))
+  (actions/as-action (logging/log (keyword (name log-level)) (str module "/" sub-module " - " log-message))))
 (s/fdef p/provision-log
   :args (s/cat :provisioner ::p/provisioner
                :module ::p/module
